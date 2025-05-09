@@ -1,3 +1,3 @@
-from .document import DocumentMetadata
+from .document import DocumentMetadata, Document
 
-__all__ = ["DocumentMetadata"]
+__all__ = ["DocumentMetadata", "Document"]

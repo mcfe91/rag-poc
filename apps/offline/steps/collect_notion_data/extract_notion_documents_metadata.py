@@ -1,5 +1,6 @@
-from zenml import step
+from loguru import logger
 from typing_extensions import Annotated
+from zenml import step, get_step_context
 
 from offline.domain import DocumentMetadata
 from offline.infrastructure.notion import NotionDatabaseClient
@@ -17,5 +18,18 @@ def extract_notion_documents_metadata(database_id: str) -> Annotated[list[Docume
     """
     client = NotionDatabaseClient()
     documents_metadata = client.query_notion_database(database_id)
+
+    logger.info(
+        f"Extracted {len(documents_metadata)} documents metadata from {database_id}"
+    )
+
+    step_context = get_step_context()
+    step_context.add_output_metadata(
+        output_name="notion_documents_metadata",
+        metadata={
+            "database_id": database_id,
+            "len_documents_metadata": len(documents_metadata),
+        }
+    )
 
     return documents_metadata
