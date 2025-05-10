@@ -11,6 +11,23 @@ class DocumentMetadata(BaseModel):
     title: str
     properties: dict
 
+    def obfuscate(self) -> "DocumentMetadata":
+        """Create an obfuscated version of this metadata by modifying in place.
+
+        Returns:
+            DocumentMetadata: Self, with ID and URL obfuscated.
+        """
+
+        pass
+
+        # original_id = self.id.replace("-", "")
+        # fake_id = utils.generate_rand_hex(len(original_id))
+
+        # self.id = fake_id
+        # self.url = self.url.replace(original_id, fake_id)
+
+        # return self
+
 class Document(BaseModel):
     id: str = Field(default_factory=lambda: utils.generate_rand_hex(length=32))
     metadata: DocumentMetadata
@@ -19,6 +36,25 @@ class Document(BaseModel):
     content_quality_score: float | None = None
     summary: str | None = None
     child_urls: list[str] = Field(default_factory=list)
+
+    @classmethod
+    def from_file(cls, file_path: Path) -> "Document":
+        """Read a Document object from a JSON file.
+
+        Args:
+            file_path: Path to the JSON file containing document data.
+
+        Returns:
+            Document: A new Document instance constructed from the file data.
+
+        Raises:
+            FileNotFoundError: If the specified file doesn't exist.
+            ValidationError: If the JSON data doesn't match the expected model structure.
+        """
+
+        json_data = file_path.read_text(encoding="utf-8")
+
+        return cls.model_validate_json(json_data)
 
     def write(
         self, output_dir: Path, obfuscate: bool = False, also_save_as_txt: bool = False
@@ -53,4 +89,18 @@ class Document(BaseModel):
                 f.write(self.content)
 
     def obfuscate(self) -> "Document":
+        """Create an obfuscated version of this document by modifying in place.
+
+        Returns:
+            Document: Self, with obfuscated metadata and parent_metadata.
+        """
+
+        # self.metadata = self.metadata.obfuscate()
+        # self.parent_metadata = {
+        #     self.parent_metadata.obfuscate() if self.parent_metadata else None
+        # }
+        # self.id = self.metadata.id
+
+        # return self
+
         pass

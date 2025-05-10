@@ -6,3 +6,6 @@ local-zenml-server-stop:
 
 collect-notion-data-pipeline:
 	uv run python -m tools.run --run-collect-notion-data-pipeline --no-cache
+
+make etl-pipeline:
+	uv run python -m tools.run --run-etl-pipeline --no-cache

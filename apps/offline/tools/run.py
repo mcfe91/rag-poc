@@ -3,7 +3,8 @@ from pathlib import Path
 from datetime import datetime as dt
 
 from pipelines import (
-    collect_notion_data
+    collect_notion_data,
+    etl,
 )
 
 @click.command(
@@ -23,10 +24,16 @@ Main entry point for the pipeline execution.
     default=False,
     help="Whether to run the collection data from Notion pipeline.",
 )
-
+@click.option(
+    "--run-etl-pipeline",
+    is_flag=True,
+    default=False,
+    help="Whether to run the ETL pipeline.",
+)
 def main(
     no_cache: bool = False,
     run_collect_notion_data_pipeline: bool = False,
+    run_etl_pipeline: bool = False,
 ) -> None:
     pipeline_args: dict[str, Any] = {
         "enable_cache": not no_cache,
@@ -39,6 +46,15 @@ def main(
         assert pipeline_args["config_path"].exists(), f"Config file not found: {pipeline_args['config_path']}"
         pipeline_args["run_name"] = f"collect_notion_data_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
         collect_notion_data.with_options(**pipeline_args)(**run_args)
+
+    if run_etl_pipeline:
+        run_args = {}
+        pipeline_args["config_path"] = root_dir / "configs" / "etl.yaml"
+        assert pipeline_args["config_path"].exists(), (
+            f"Config file not found: {pipeline_args['config_path']}"
+        )
+        pipeline_args["run_name"] = f"etl_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+        etl.with_options(**pipeline_args)(**run_args)
 
 if __name__ == "__main__":
     main()
