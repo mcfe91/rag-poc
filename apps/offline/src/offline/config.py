@@ -24,13 +24,14 @@ class Settings(BaseSettings):
         description="Model ID for OpenAI service.",
     )
 
-    @field_validator("OPENAI_API_KEY")
-    @classmethod
-    def check_not_empty(cls, value: str, info) -> str:
-        if not value or value.strip() == "":
-            logger.error(f"{info.field_name} cannot be empty.")
-            raise ValueError(f"{info.field_name} cannot be empty.")
-        return value
+    MONGODB_DATABASE_NAME: str = Field(
+        default="offline_database",
+        description="Name of the MongoDB database.",
+    )
+    MONGODB_URI: str = Field(
+        default="mongodb://decodingml:decodingml@localhost:27017/?directConnection=true",
+        description="Connection URI for the local MongoDB Atlas instance.",
+    )
 
 try:
     settings = Settings()

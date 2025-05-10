@@ -5,6 +5,8 @@ from zenml import pipeline
 
 from steps.infrastructure import (
     read_documents_from_disk,
+    save_documents_to_disk,
+    ingest_to_mongodb
 )
 from steps.etl import (
     add_quality_score,
@@ -21,6 +23,8 @@ def etl(
 ) -> None:
     notion_data_dir = data_dir / "notion"
     logger.info(f"Reading notion data from {notion_data_dir}")
+    crawled_data_dir = data_dir / "crawled"
+    logger.info(f"Reading notion data from {crawled_data_dir}")
 
     documents = read_documents_from_disk(
         data_directory=notion_data_dir, nesting_level=1
@@ -31,4 +35,12 @@ def etl(
         model_id=quality_agent_model_id,
         mock=quality_agent_mock,
         max_workers=max_workers,
+    )
+
+    save_documents_to_disk(documents=enhanced_documents, output_dir=crawled_data_dir)
+
+    ingest_to_mongodb(
+        models=enhanced_documents,
+        collection_name=load_collection_name,
+        clear_collection=True,
     )
