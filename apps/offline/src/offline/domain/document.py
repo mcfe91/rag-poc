@@ -56,6 +56,11 @@ class Document(BaseModel):
 
         return cls.model_validate_json(json_data)
 
+    def add_quality_score(self, score: float) -> "Document":
+        self.content_quality_score = score
+
+        return self
+
     def write(
         self, output_dir: Path, obfuscate: bool = False, also_save_as_txt: bool = False
     ) -> None:
