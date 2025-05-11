@@ -16,7 +16,7 @@ def save_documents_to_disk(
     output_dir.mkdir(parents=True)
 
     for document in documents:
-        document.write(output_dir=output_dir, obfuscate=True, also_save_as_txt=True)
+        document.write(output_dir=output_dir, obfuscate=True, also_save_as_txt=False)
 
     step_context = get_step_context()
     step_context.add_output_metadata(

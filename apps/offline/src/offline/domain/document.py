@@ -7,7 +7,7 @@ from offline import utils
 
 class DocumentMetadata(BaseModel):
     id: str
-    url: str
+    url: str | None
     title: str
     properties: dict
 

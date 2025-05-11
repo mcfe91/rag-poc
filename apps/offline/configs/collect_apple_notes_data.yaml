@@ -1,0 +1,4 @@
+parameters:
+  notes_db_path: /Users/maxmcferren/dev/rag-poc/apps/offline/data/apple_notes/apple_notes.db
+  data_dir: data/
+  to_s3: false
