@@ -1,5 +1,7 @@
 import requests
+
 from loguru import logger
+from markdownify import markdownify
 
 from offline.config import settings
 from offline.domain import Document, DocumentMetadata
@@ -48,7 +50,7 @@ class NotionDocumentClient:
             id=document_metadata.id,
             metadata=document_metadata,
             parent_metadata=parent_metadata,
-            content=content,
+            content=markdownify(content),
             child_urls=urls
         )
 
