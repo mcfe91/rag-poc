@@ -1,6 +1,6 @@
 parameters:
   data_dir: data/
-  load_collection_name: raw
+  load_collection_name: raw_notion
   to_s3: false
   max_workers: 4
   quality_agent_model_id: gpt-4o-mini
