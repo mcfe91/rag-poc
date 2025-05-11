@@ -13,7 +13,7 @@ from steps.etl import (
 )
 
 @pipeline
-def etl(
+def etl_apple_notes(
     data_dir: Path,
     load_collection_name: str,
     to_s3: bool = False,
@@ -21,13 +21,13 @@ def etl(
     quality_agent_model_id: str = "gpt-4o-mini",
     quality_agent_mock: bool = True,
 ) -> None:
-    notion_data_dir = data_dir / "notion"
-    logger.info(f"Reading notion data from {notion_data_dir}")
-    crawled_data_dir = data_dir / "crawled"
-    logger.info(f"Reading notion data from {crawled_data_dir}")
+    apple_data_dir = data_dir / "apple_notes"
+    logger.info(f"Reading apple data from {apple_data_dir}")
+    crawled_data_dir = data_dir / "apple_crawled"
+    logger.info(f"Reading apple data from {crawled_data_dir}")
 
     documents = read_documents_from_disk(
-        data_directory=notion_data_dir, nesting_level=1
+        data_directory=apple_data_dir, nesting_level=1
     )
 
     enhanced_documents = add_quality_score(

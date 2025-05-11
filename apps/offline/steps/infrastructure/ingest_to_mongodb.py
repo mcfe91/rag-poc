@@ -35,6 +35,7 @@ def ingest_to_mongodb(
                 f"'clear_collection' is set to True. Clearing MongoDB collection '{collection_name}' before ingestion."
             )
             service.clear_collection()
+            
         service.ingest_documents(models)
 
         count = service.get_collection_count()

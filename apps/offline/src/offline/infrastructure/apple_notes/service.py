@@ -68,11 +68,15 @@ class AppleNotesDBService(Generic[T]):
 
     def __parse_documents(self, documents: list[dict]) -> list[T]:
         """Convert Apple Notes documents to Pydantic model instances.
+        Filter out documents that exceed MongoDB's 16MB limit.
         """
         
         parsed_documents = []
+        filtered_count = 0
+        MAX_SIZE = 16000000  # Just under 16MB
+        
         for doc in documents:
-            note_to_doc= {
+            note_to_doc = {
                 "id": doc[0].split('/')[-1],
                 "content": markdownify(doc[2]),
                 "metadata": {
@@ -85,8 +89,22 @@ class AppleNotesDBService(Generic[T]):
                     }
                 }
             }
+            
+            doc_size = len(str(note_to_doc))
+            if doc_size > MAX_SIZE:
+                filtered_count += 1
+                logger.warning(f"Filtering out document with title '{doc[1]}' due to size ({doc_size} bytes)")
+                continue
+                
             parsed_doc = self.model.model_validate(note_to_doc)
             parsed_documents.append(parsed_doc)
+
+        total_documents = len(documents)
+        kept_documents = len(parsed_documents)
+        
+        logger.info(f"Total documents from Apple Notes: {total_documents}")
+        logger.info(f"Documents kept (under size limit): {kept_documents}")
+        logger.info(f"Documents filtered (over size limit): {filtered_count}")
 
         return parsed_documents
         

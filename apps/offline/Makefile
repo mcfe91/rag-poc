@@ -10,5 +10,8 @@ collect-notion-data-pipeline:
 collect-apple-notes-data-pipeline:
 	uv run python -m tools.run --run-collect-apple-notes-data-pipeline --no-cache
 
-etl-pipeline:
-	uv run python -m tools.run --run-etl-pipeline --no-cache
+etl-notion-pipeline:
+	uv run python -m tools.run --run-etl-notion-pipeline --no-cache
+
+etl-apple-notes-pipeline:
+	uv run python -m tools.run --run-etl-apple-notes-pipeline --no-cache

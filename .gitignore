@@ -188,3 +188,4 @@ faiss/
 langflow_poc/
 data/
 .gradio/
+*.db
