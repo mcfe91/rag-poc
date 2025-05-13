@@ -208,6 +208,7 @@ Return the document in markdown format regardless of the original format.
             
             except Exception as e:
                 logger.warning(f"Failed to summarize document {document.id}: {str(e)}")
+                return document
         
         if semaphore:
             async with semaphore:
