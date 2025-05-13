@@ -15,3 +15,6 @@ etl-notion-pipeline:
 
 etl-apple-notes-pipeline:
 	uv run python -m tools.run --run-etl-apple-notes-pipeline --no-cache
+
+generate-dataset-pipeline:
+	uv run python -m tools.run --run-generate-dataset-pipeline --no-cache

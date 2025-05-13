@@ -217,7 +217,6 @@ DOCUMENT:
                     return document
 
                 raw_answer = response.choices[0].message.content
-                print(raw_answer)
                 quality_score = self.__parse_model_output(raw_answer)
 
                 if not quality_score:

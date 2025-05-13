@@ -136,6 +136,57 @@ class MongoDBService(Generic[T]):
         except errors.PyMongoError as e:
             logger.error(f"Error inserting documents: {e}")
             raise
+    
+    def fetch_documents(self, limit: int, query: dict) -> list[T]:
+        """Retrieve documents from the Mongo DB collection based on a query.
+
+        Args:
+            limit: Maximum number of documents to retrieve.
+            query: MongoDB query filter to apply.
+
+        Returns:
+            List of Pydantic model instances matching the query criteria.
+
+        Raises:
+            Exception: If the query operation fails.        
+
+        """
+
+        try:
+            documents = list(self.collection.find(query).limit(limit))
+            logger.debug(f"Fetched {len(documents)} documents with query {query}")
+            return self.__parse_documents(documents)
+        except Exception as e:
+            logger.error(f"Error fetching documents: {e}")
+            raise
+    
+    def __parse_documents(self, documents: list[dict]) -> list[T]:
+        """Convert MongoDB documents to Pydantic model instances.
+
+        Converts MongoDB ObjectId fields to strings and transforms the document structure
+        to match the Pydantic model schema.
+
+        Args:
+            documents: List of MongoDB documents to parse.
+
+        Returns:
+            List of validated Pydantic model instances.
+        """
+
+        parsed_documents = []
+        for doc in documents:
+            for key, value in doc.items():
+                if isinstance(value, ObjectId):
+                    doc[key] = str(value)
+
+            _id = doc.pop("_id", None)
+            doc["id"] = _id
+
+            parsed_doc = self.model.model_validate(doc)
+            parsed_documents.append(parsed_doc)
+
+        return parsed_documents
+                
 
     def get_collection_count(self) -> int:
         """Count the total number of documents in the collection.

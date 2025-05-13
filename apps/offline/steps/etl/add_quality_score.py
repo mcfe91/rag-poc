@@ -49,7 +49,7 @@ def add_quality_score(
     ]
 
     quality_agent = QualityScoreAgent(
-        model_id=model_id, mock=True, max_concurrent_requests=max_workers
+        model_id=model_id, mock=mock, max_concurrent_requests=max_workers
     )
     scored_documents_with_agents: list[Document] = quality_agent(
         documents_without_scores
