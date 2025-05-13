@@ -55,6 +55,11 @@ class Document(BaseModel):
         json_data = file_path.read_text(encoding="utf-8")
 
         return cls.model_validate_json(json_data)
+    
+    def add_summary(self, summary: str) -> "Document":
+        self.summary = summary
+
+        return self
 
     def add_quality_score(self, score: float) -> "Document":
         self.content_quality_score = score

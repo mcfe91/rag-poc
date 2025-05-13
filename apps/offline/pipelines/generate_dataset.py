@@ -2,7 +2,7 @@ from pathlib import Path
 
 from zenml import pipeline
 
-from steps.generate_dataset import create_histograms
+from steps.generate_dataset import create_histograms, generate_summary_dataset
 from steps.infrastructure import (
     fetch_from_mongodb
 )
@@ -29,4 +29,17 @@ def generate_dataset(
 
     create_histograms(documents)
 
-    return documents
+    dataset = generate_summary_dataset(
+        documents=documents,
+        summarization_model=summarization_agent_model_id,
+        val_split_ratio=val_split_ratio,
+        test_split_ratio=test_split_ratio,
+        min_document_characters=min_document_characters,
+        min_quality_score=min_quality_score,
+        augmentation_loops=augmentation_loops,
+        max_workers=max_workers,
+        mock=summarization_agent_mock,
+        summarization_max_characters=summarization_max_characters,
+    )
+
+    return dataset
