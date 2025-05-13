@@ -2,6 +2,7 @@ from pathlib import Path
 
 from zenml import pipeline
 
+from steps.generate_dataset import create_histograms
 from steps.infrastructure import (
     fetch_from_mongodb
 )
@@ -25,5 +26,7 @@ def generate_dataset(
     documents = fetch_from_mongodb(
         collection_name=extract_collection_name, limit=fetch_limit
     )
+
+    create_histograms(documents)
 
     return documents

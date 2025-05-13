@@ -12,6 +12,7 @@ dependencies = [
     "langchain-openai>=0.3.16",
     "loguru>=0.7.3",
     "markdownify>=1.1.0",
+    "matplotlib>=3.10.3",
     "pydantic>=2.8.2",
     "pydantic-settings>=2.9.1",
     "pymongo>=4.12.1",

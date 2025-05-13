@@ -1,7 +1,7 @@
 parameters:
   extract_collection_name: raw_apple_notes
   load_dataset_id: second_brain_course_summarization_task
-  fetch_limit: 1000
+  fetch_limit: 10000
   summarization_agent_model_id: gpt-4o-mini
   summarization_agent_mock: false
   summarization_max_characters: 256
