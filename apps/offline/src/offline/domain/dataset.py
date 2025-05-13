@@ -4,6 +4,7 @@ from pathlib import Path
 
 from loguru import logger
 from pydantic import BaseModel
+from datasets import Dataset, DatasetDict
 
 class InstructDatasetSample(BaseModel):
     instruction: str
@@ -74,6 +75,13 @@ class InstructDataset(BaseModel):
             test_split_ratio=test_split_ratio,
             seed=seed,
         )
+    
+    def to_huggingface(self) -> DatasetDict:
+        train = Dataset.from_list([sample.model_dump() for sample in self.train])
+        validation = Dataset.from_list([sample.model_dump() for sample in self.validation])
+        test = Dataset.from_list([sample.model_dump() for sample in self.test])
+        return DatasetDict({"train": train, "validation": validation, "test": test})
+
     
     def write(self, output_dir: Path) -> Path:
         """Writes the dataset splits to JSON files in the specified directory.

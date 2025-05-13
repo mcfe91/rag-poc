@@ -44,6 +44,6 @@ def generate_dataset(
         summarization_max_characters=summarization_max_characters,
     )
 
-    # push_to_huggingface(dataset, load_dataset_id)
+    push_to_huggingface(dataset, load_dataset_id)
 
     save_dataset_to_disk(dataset, output_dir=data_dir / "datasets" / load_dataset_id)

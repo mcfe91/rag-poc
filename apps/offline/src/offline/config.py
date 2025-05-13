@@ -33,6 +33,17 @@ class Settings(BaseSettings):
         description="Connection URI for the local MongoDB Atlas instance.",
     )
 
+    HUGGINGFACE_ACCESS_TOKEN: str | None = Field(
+        default=None, description="Access token for Hugging Face API authentication."
+    )
+    HUGGINGFACE_DEDICATED_ENDPOINT: str | None = Field(
+        default=None,
+        description="Dedicated endpoint URL for real-time inference. "
+        "If provided, we will use the dedicated endpoint instead of OpenAI. "
+        "For example, https://um18v2aeit3f6g1b.eu-west-1.aws.endpoints.huggingface.cloud/v1/, "
+        "with /v1 after the endpoint URL.",
+    )
+
 try:
     settings = Settings()
 except Exception as e:
