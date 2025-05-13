@@ -4,7 +4,9 @@ from zenml import pipeline
 
 from steps.generate_dataset import create_histograms, generate_summary_dataset
 from steps.infrastructure import (
-    fetch_from_mongodb
+    fetch_from_mongodb,
+    save_dataset_to_disk,
+    push_to_huggingface,
 )
 
 @pipeline
@@ -42,4 +44,6 @@ def generate_dataset(
         summarization_max_characters=summarization_max_characters,
     )
 
-    return dataset
+    # push_to_huggingface(dataset, load_dataset_id)
+
+    save_dataset_to_disk(dataset, output_dir=data_dir / "datasets" / load_dataset_id)

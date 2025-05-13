@@ -1,4 +1,6 @@
+import json
 import random
+from pathlib import Path
 
 from loguru import logger
 from pydantic import BaseModel
@@ -72,3 +74,31 @@ class InstructDataset(BaseModel):
             test_split_ratio=test_split_ratio,
             seed=seed,
         )
+    
+    def write(self, output_dir: Path) -> Path:
+        """Writes the dataset splits to JSON files in the specified directory.
+
+        Args:
+            output_dir: Directory path where the dataset files will be saved
+
+        Returns:
+            Path to the output directory containing the saved files
+        """
+        train = [sample.model_dump() for sample in self.train] 
+        validation = [sample.model_dump() for sample in self.validation]
+        test = [sample.model_dump() for sample in self.test]
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        for split_name, samples in {
+            "train": train,
+            "validation": validation,
+            "test": test,
+        }.items():
+            output_file = output_dir / f"{split_name}.json"
+            with open(output_file, "w") as f:
+                json.dump(samples, f, indent=2)
+
+        logger.info(f"Wrote dataset splits to {output_dir}")
+
+        return output_dir
