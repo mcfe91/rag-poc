@@ -18,3 +18,6 @@ etl-apple-notes-pipeline:
 
 generate-dataset-pipeline:
 	uv run python -m tools.run --run-generate-dataset-pipeline --no-cache
+
+check-huggingface-dedicated-endpoint:
+	uv run python -m tools.call_hf_dedicated_endpoint
