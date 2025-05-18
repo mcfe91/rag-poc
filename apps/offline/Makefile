@@ -21,3 +21,6 @@ generate-dataset-pipeline:
 
 check-huggingface-dedicated-endpoint:
 	uv run python -m tools.call_hf_dedicated_endpoint
+
+compute-rag-vector-index-openai-parent-pipeline:
+	uv run python -m tools.run --run-compute-rag-vector-index-openai-parent-pipeline --no-cache

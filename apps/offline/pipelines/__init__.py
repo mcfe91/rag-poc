@@ -3,6 +3,7 @@ from .collect_apple_notes_data import collect_apple_notes_data
 from .etl_notion import etl_notion
 from .etl_apple_notes import etl_apple_notes
 from .generate_dataset import generate_dataset
+from .compute_rag_vector_index import compute_rag_vector_index
 
 __all__ = [
     "collect_notion_data",
@@ -10,4 +11,5 @@ __all__ = [
     "etl_notion",
     "etl_apple_notes",
     "generate_dataset",
+    "compute_rag_vector_index",
 ]

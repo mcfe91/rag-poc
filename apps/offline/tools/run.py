@@ -10,6 +10,7 @@ from pipelines import (
     etl_notion,
     etl_apple_notes,
     generate_dataset,
+    compute_rag_vector_index,
 )
 
 @click.command(
@@ -53,6 +54,12 @@ Main entry point for the pipeline execution.
     default=False,
     help="Whether to run the generate dataset pipeline.",
 )
+@click.option(
+    "--run-compute-rag-vector-index-openai-parent-pipeline",
+    is_flag=True,
+    default=False,
+    help="Whether to run the generate dataset pipeline.",
+)
 def main(
     no_cache: bool = False,
     run_collect_notion_data_pipeline: bool = False,
@@ -60,6 +67,7 @@ def main(
     run_etl_notion_pipeline: bool = False,
     run_etl_apple_notes_pipeline: bool = False,
     run_generate_dataset_pipeline: bool = False,
+    run_compute_rag_vector_index_openai_parent_pipeline: bool = False,
 ) -> None:
     pipeline_args: dict[str, Any] = {
         "enable_cache": not no_cache,
@@ -106,6 +114,15 @@ def main(
         )
         pipeline_args["run_name"] = f"generate_dataset_pipeline_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
         generate_dataset.with_options(**pipeline_args)(**run_args)
+
+    if run_compute_rag_vector_index_openai_parent_pipeline:
+        run_args = {}
+        pipeline_args["config_path"] = root_dir / "configs" / "compute_rag_vector_index_openai_parent.yaml"
+        assert pipeline_args["config_path"].exists(), (
+            f"Config file not found: {pipeline_args['config_path']}"
+        )
+        pipeline_args["run_name"] = f"compute_rag_vector_index_openai_parent_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+        compute_rag_vector_index.with_options(**pipeline_args)(**run_args)
 
 if __name__ == "__main__":
     main()
