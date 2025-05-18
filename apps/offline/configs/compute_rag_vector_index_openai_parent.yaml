@@ -1,6 +1,6 @@
 parameters:
   extract_collection_name: raw_apple_notes
-  fetch_limit: 1000
+  fetch_limit: 10000
   load_collection_name: rag
   content_quality_score_threshold: 0.6
   retriever_type: parent

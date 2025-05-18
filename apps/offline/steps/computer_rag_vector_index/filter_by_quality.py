@@ -7,7 +7,7 @@ from offline.domain.document import Document
 def filter_by_quality(
     documents: list[Document],
     content_quality_score_threshold: float,
-) -> Annotated[list[Document], "filtered_document"]:
+) -> Annotated[list[Document], "filtered_documents"]:
     """Process documents by chunking, embedding, and loading into MongoDB.
 
     Args:

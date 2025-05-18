@@ -4,6 +4,10 @@ from steps.computer_rag_vector_index import chunk_embed_load
 from steps.computer_rag_vector_index import filter_by_quality
 from steps.infrastructure import fetch_from_mongodb
 
+from offline.application.rag.embeddings import EmbeddingModelType
+from offline.application.rag.retrievers import RetrieverType
+from offline.application.rag.splitters import SummarizationType
+
 @pipeline
 def compute_rag_vector_index(
     extract_collection_name: str,

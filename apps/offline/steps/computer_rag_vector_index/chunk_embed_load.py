@@ -1,9 +1,21 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Generator
 from zenml import step
+from loguru import logger
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_mongodb.retrievers import (
+    MongoDBAtlasParentDocumentRetriever,
+)
+from langchain_core.documents import Document as LangChainDocument
+from tqdm import tqdm
 
 from offline.domain.document import Document
 from offline.application.rag import get_retriever
+from offline.application.rag.splitters import get_splitter
 from offline.application.rag.retrievers import RetrieverType
 from offline.application.rag.embeddings import EmbeddingModelType
+from offline.application.rag.splitters import SummarizationType
+from offline.infrastructure.mongo import MongoDBService, MongoDBIndex
 
 @step
 def chunk_embed_load(
@@ -41,4 +53,131 @@ def chunk_embed_load(
         device: Device to run embeddings on ('cpu' or 'cuda'). Defaults to 'cpu'.
     """
 
-    retriever = get_retriver()
+    retriever = get_retriever(
+        embedding_model_id=embedding_model_id,
+        embedding_model_type=embedding_model_type,
+        retriever_type=retriever_type,
+        device=device,
+    )
+
+    splitter = get_splitter(
+        chunk_size=chunk_size,
+        summarization_type=contextual_summarization_type,
+        model_id=contextual_agent_model_id,
+        max_characters=contextual_agent_max_characters,
+        mock=False,
+        max_concurrent_requests=processing_max_workers,
+    )
+
+    with MongoDBService(
+        model=Document, collection_name=collection_name
+    ) as mongodb_client:
+        mongodb_client.clear_collection()
+
+        docs = [
+            LangChainDocument(
+                page_content=doc.content, metadata=doc.metadata.model_dump()
+            )
+            for doc in documents
+            if doc
+        ]
+        process_docs(
+            retriever,
+            docs,
+            splitter=splitter,
+            batch_size=processing_batch_size,
+            max_workers=processing_max_workers,
+        )
+
+        index = MongoDBIndex(
+            retriever=retriever,
+            mongodb_client=mongodb_client,
+        )
+
+        index.create(
+            embedding_dim=embedding_model_dim,
+            is_hybrid=retriever_type == "contextual",
+        )
+
+def process_docs(
+    retriever: Any,
+    docs: list[LangChainDocument],
+    splitter: RecursiveCharacterTextSplitter,
+    batch_size: int = 4,
+    max_workers: int = 2,
+) -> list[None]:
+    """Process LangChain documents into MongoDB using thread pool.
+
+    Args:
+        retriever: MongoDB Atlas document retriever instance.
+        docs: List of LangChain documents to process.
+        splitter: Text splitter instance for chunking documents.
+        batch_size: Number of documents to process in each batch.
+        max_workers: Maximum number of concurrent threads.
+
+    Returns:
+        List of None values representing completed batch processing results.
+    """
+
+    batches = list(get_batches(docs, batch_size))
+    results = []
+    total_docs = len(docs)
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [
+            executor.submit(process_batch, retriever, batch, splitter)
+            for batch in batches
+        ]
+
+        with tqdm(total=total_docs, desc="Processing documents") as pbar:
+            for future in as_completed(futures):
+                result = future.result()
+                results.append(result)
+                pbar.update(batch_size)
+
+    return results
+
+
+def get_batches(
+    docs: list[LangChainDocument], batch_size: int
+) -> Generator[list[LangChainDocument], None, None]:
+    """Return batches of documents to ingest into MongoDB.
+
+    Args:
+        docs: List of LangChain documents to batch.
+        batch_size: Number of documents in each batch.
+
+    Yields:
+        Generator[list[LangChainDocument]]: Batches of documents of size batch_size.
+    """
+
+    for i in range(0, len(docs), batch_size):
+        yield docs[i : i + batch_size]
+
+
+def process_batch(
+    retriever: Any,
+    batch: list[LangChainDocument],
+    splitter: RecursiveCharacterTextSplitter,
+) -> None:
+    """Ingest batches of documents into MongoDB by splitting and embedding.
+
+    Args:
+        retriever: MongoDB Atlas document retriever instance.
+        batch: List of documents to ingest in this batch.
+        splitter: Text splitter instance for chunking documents.
+
+    Raises:
+        Exception: If there is an error processing the batch of documents.
+    """
+
+    try:
+        if isinstance(retriever, MongoDBAtlasParentDocumentRetriever):
+            retriever.add_documents(batch)
+        else:
+            split_docs = splitter.split_documents(batch)
+            retriever.vectorstore.add_documents(split_docs)
+
+        logger.info(f"Successfully processed {len(batch)} documents.")
+    except Exception as e:
+        logger.warning(f"Error processing batch of {len(batch)} documents: {str(e)}")
