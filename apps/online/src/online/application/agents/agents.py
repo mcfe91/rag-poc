@@ -29,12 +29,16 @@ class AgentWrapper():
         return self.__agent.input_messages
 
     @property
-    def agent_name(self) -> str:
+    def name(self) -> str:
         return self.__agent.agent_name
 
     @property
     def max_steps(self) -> str:
         return self.__agent.max_steps
+    
+    @property
+    def model(self):
+        return self.__agent.model
 
     @classmethod
     def build_from_smolagents(cls, retriever_config_path: Path) -> "AgentWrapper":

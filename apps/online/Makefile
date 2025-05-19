@@ -10,3 +10,6 @@ check-config:
 
 run_agent_query: check-config
 	uv run python -m tools.app --retriever-config-path=$(RETRIEVER_CONFIG) --query "What's the difference between vector databases and vector indices?"
+
+run_agent_app: check-config
+	uv run python -m tools.app --retriever-config-path=$(RETRIEVER_CONFIG) --ui
