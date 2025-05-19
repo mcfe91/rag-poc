@@ -6,9 +6,9 @@ from opik import opik_context, track
 from loguru import logger
 from smolagents import Tool
 
-from apps.offline.src.offline.application.rag.retrievers import get_retriever
+from online.application.rag.retrievers import get_retriever
 
-class MongoDBRetriever(Tool):
+class MongoDBRetrieverTool(Tool):
     name = "mongodb_vector_search_retriever"
     description = """Use this tool to search and retrieve relevant documents from a knowledge base using semantic search.
     This tool performs similarity-based search to find the most relevant documents matching the query.
@@ -70,7 +70,7 @@ class MongoDBRetriever(Tool):
         )
 
         try:
-            query = self.__parse_query(query)
+            # query = self.__parse_query(query)
             relevant_docs = self.retriever.invoke(query)
 
             formatted_docs = []
@@ -100,6 +100,7 @@ When using context from any document, also include the document URL as reference
 
     @track(name="MongoDBRetrieverTool.parse_query")
     def __parse_query(self, query: str) -> str:
+        print(query, 123123)
         query_dict = json.loads(query)
 
         return query_dict["query"]

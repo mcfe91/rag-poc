@@ -1,7 +1,10 @@
 from pathlib import Path
-import click
 
-from online.application.agents.agents import get_agent
+import click
+from smolagents import GradioUI
+
+from online import opik_utils
+from online.application.agents import get_agent
 
 @click.command()
 @click.option(
@@ -30,7 +33,18 @@ def main(retriever_config_path: Path, ui: bool, query: str) -> None:
         ui: If True, launches Gradio UI. If False, runs in the CLI mode
         query: Query string to run in CLI mode
     """
+    opik_utils.configure()
+    
     agent = get_agent(retriever_config_path=Path(retriever_config_path))
+
+    if ui:
+        GradioUI(agent).launch()
+    else:
+        assert query, "Query is required in CLI mode"
+
+        result = agent.run(query)
+
+        print(result)
 
 if __name__ == "__main__":
     main()
