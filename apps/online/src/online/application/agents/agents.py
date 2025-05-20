@@ -26,7 +26,7 @@ class AgentWrapper():
 
     @property
     def input_messages(self) -> list[dict]:
-        return self.__agent.input_messages
+       return self.__agent.input_messages
 
     @property
     def name(self) -> str:
@@ -78,7 +78,7 @@ class AgentWrapper():
         model = self.__agent.model
         metadata = {
             "system_prompt": self.__agent.system_prompt,
-            # "system_prompt_template": self.__agent.system_prompt_template,
+            # "system_prompt_template": self.__agent.system_prompt,
             # "tool_description_template": self.__agent.tool_description_template,
             "tools": self.__agent.tools,
             "model_id": self.__agent.model.model_id,
@@ -94,3 +94,34 @@ class AgentWrapper():
         )
 
         return result
+
+def extract_tool_responses(agent: ToolCallingAgent) -> str:
+    """
+    Extracts and concatenates all tool response contents with numbered observation delimiters.
+
+    Args:
+        input_messages (List[Dict]): List of message dictionaries containing 'role' and 'content' keys
+
+    Returns:
+        str: Tool response contents separated by numbered observation delimiters
+
+    Example:
+        >>> messages = [
+        ...     {"role": MessageRole.TOOL_RESPONSE, "content": "First response"},
+        ...     {"role": MessageRole.USER, "content": "Question"},
+        ...     {"role": MessageRole.TOOL_RESPONSE, "content": "Second response"}
+        ... ]
+        >>> extract_tool_responses(messages)
+        "-------- OBSERVATION 1 --------\nFirst response\n-------- OBSERVATION 2 --------\nSecond response"
+    """
+
+    tool_responses = [
+        msg["content"]
+        for msg in agent.input_messages
+        if msg["role"] == MessageRole.TOOL_RESPONSE
+    ]
+
+    return "\n".join(
+        f"-------- OBSERVATION {i + 1} --------\n{response}"
+        for i, response in enumerate(tool_responses)
+    )

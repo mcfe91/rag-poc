@@ -13,3 +13,6 @@ run_agent_query: check-config
 
 run_agent_app: check-config
 	uv run python -m tools.app --retriever-config-path=$(RETRIEVER_CONFIG) --ui
+
+evaluate_agent: check-config
+	uv run python -m tools.evaluate_app --retriever-config-path=$(RETRIEVER_CONFIG)
