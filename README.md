@@ -22,18 +22,18 @@
 `./offline/configs/*.yaml`
 
 ## Collect raw data ##
-`collect-notion-data-pipeline`
-`collect-apple-notes-data-pipeline`
+`make collect-notion-data-pipeline`
+`make collect-apple-notes-data-pipeline`
 
 ## Extract, Transform, Load pipeline ##
-`etl-notion-pipeline`
-`etl-apple-notes-pipeline`
+`make etl-notion-pipeline`
+`make etl-apple-notes-pipeline`
 
 ## Generate custom dataset ##
-`generate-dataset-pipeline`
+`make generate-dataset-pipeline`
 
 ## RAG Ingestion - Chunk, embed, load ##
-`compute-rag-vector-index-openai-parent-pipeline`
+`make compute-rag-vector-index-openai-parent-pipeline`
 
 ## Run agentic rag - query CLI ##
 `make run_agent_query`
