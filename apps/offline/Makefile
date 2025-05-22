@@ -1,3 +1,9 @@
+local-docker-infrastructure-up:
+	docker compose -f ../infrastructure/docker/docker-compose.yml up --build -d 
+
+local-docker-infrastructure-stop:
+	docker compose -f ../infrastructure/docker/docker-compose.yml stop
+
 local-zenml-server-up:
 	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES uv run zenml login --local
 
